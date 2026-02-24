@@ -1,0 +1,185 @@
+{
+  "_comment": "Sample responses from Google Places API. Use these to understand the JSON shape when building fromJson() methods.",
+
+  "nearby_search_response": {
+    "_endpoint": "GET https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=LAT,LNG&radius=5000&type=restaurant&key=API_KEY",
+    "html_attributions": [],
+    "results": [
+      {
+        "business_status": "OPERATIONAL",
+        "geometry": {
+          "location": {
+            "lat": 25.1124,
+            "lng": 55.1390
+          },
+          "viewport": {
+            "northeast": { "lat": 25.1137, "lng": 55.1403 },
+            "southwest": { "lat": 25.1111, "lng": 55.1377 }
+          }
+        },
+        "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+        "name": "Al Mahara Restaurant",
+        "opening_hours": {
+          "open_now": true
+        },
+        "photos": [
+          {
+            "height": 3024,
+            "html_attributions": ["<a href=\"https://maps.google.com/...\">Someone</a>"],
+            "photo_reference": "AUGGfZnKx7E9v5m3LqYjT8xR_EXAMPLE_REFERENCE_STRING",
+            "width": 4032
+          }
+        ],
+        "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+        "plus_code": {
+          "compound_code": "67CW+VR Dubai",
+          "global_code": "7HQQ67CW+VR"
+        },
+        "price_level": 3,
+        "rating": 4.5,
+        "reference": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+        "scope": "GOOGLE",
+        "types": ["restaurant", "food", "point_of_interest", "establishment"],
+        "user_ratings_total": 1250,
+        "vicinity": "Jumeirah Beach Road, Dubai"
+      },
+      {
+        "business_status": "OPERATIONAL",
+        "geometry": {
+          "location": {
+            "lat": 25.2048,
+            "lng": 55.2708
+          }
+        },
+        "name": "Pierchic",
+        "opening_hours": {
+          "open_now": false
+        },
+        "photos": [
+          {
+            "photo_reference": "AUGGfZk_SECOND_EXAMPLE_REFERENCE",
+            "height": 2000,
+            "width": 3000
+          }
+        ],
+        "place_id": "ChIJBZKmQ_example2",
+        "price_level": 4,
+        "rating": 4.7,
+        "types": ["restaurant", "food", "establishment"],
+        "user_ratings_total": 890,
+        "vicinity": "Al Qasr Hotel, Madinat Jumeirah"
+      }
+    ],
+    "status": "OK",
+    "next_page_token": "OPTIONAL_NEXT_PAGE_TOKEN_FOR_PAGINATION"
+  },
+
+  "place_details_response": {
+    "_endpoint": "GET https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=name,rating,price_level,formatted_address,geometry,photos,opening_hours,types,editorial_summary&key=API_KEY",
+    "html_attributions": [],
+    "result": {
+      "formatted_address": "Jumeirah Beach Road, Dubai, UAE",
+      "geometry": {
+        "location": {
+          "lat": 25.1124,
+          "lng": 55.1390
+        }
+      },
+      "name": "Al Mahara Restaurant",
+      "opening_hours": {
+        "open_now": true,
+        "periods": [
+          {
+            "close": { "day": 0, "time": "2300" },
+            "open": { "day": 0, "time": "1200" }
+          }
+        ],
+        "weekday_text": [
+          "Monday: 12:00 PM – 11:00 PM",
+          "Tuesday: 12:00 PM – 11:00 PM"
+        ]
+      },
+      "photos": [
+        {
+          "height": 3024,
+          "photo_reference": "AUGGfZnKx7E9v5m3LqYjT8xR_EXAMPLE_REFERENCE_STRING",
+          "width": 4032
+        }
+      ],
+      "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+      "price_level": 3,
+      "rating": 4.5,
+      "types": ["restaurant", "food", "point_of_interest", "establishment"],
+      "user_ratings_total": 1250,
+      "editorial_summary": {
+        "language": "en",
+        "overview": "Upscale seafood restaurant inside a glass-walled aquarium at the iconic Burj Al Arab hotel."
+      }
+    },
+    "status": "OK"
+  },
+
+  "autocomplete_response": {
+    "_endpoint": "GET https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Dub&types=(cities)&key=API_KEY",
+    "predictions": [
+      {
+        "description": "Dubai, United Arab Emirates",
+        "matched_substrings": [{ "length": 3, "offset": 0 }],
+        "place_id": "ChIJRcbZaklDXz4RYlEphFBu5r0",
+        "structured_formatting": {
+          "main_text": "Dubai",
+          "main_text_matched_substrings": [{ "length": 3, "offset": 0 }],
+          "secondary_text": "United Arab Emirates"
+        },
+        "terms": [
+          { "offset": 0, "value": "Dubai" },
+          { "offset": 7, "value": "United Arab Emirates" }
+        ],
+        "types": ["locality", "political", "geocode"]
+      },
+      {
+        "description": "Dublin, Ireland",
+        "place_id": "ChIJL6wn6oAOZ0gRoB1jNFtpqms",
+        "structured_formatting": {
+          "main_text": "Dublin",
+          "secondary_text": "Ireland"
+        },
+        "types": ["locality", "political", "geocode"]
+      }
+    ],
+    "status": "OK"
+  },
+
+  "photo_url_construction": {
+    "_comment": "Do NOT store this URL in the database. Construct it at runtime from photo_reference.",
+    "_template": "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=PHOTO_REFERENCE&key=API_KEY",
+    "_example": "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=AUGGfZnKx7E9v5m3LqYjT8xR_EXAMPLE_REFERENCE_STRING&key=YOUR_API_KEY"
+  },
+
+  "place_to_model_mapping": {
+    "_comment": "How to map Nearby Search result fields to Place model fields",
+    "place_id":        "result.place_id → Place.placeId (String)",
+    "name":            "result.name → Place.name",
+    "category":        "result.types[0] → map to app category (see spec.md Section 9.3)",
+    "rating":          "result.rating → Place.rating (double, default 0.0)",
+    "price_level":     "result.price_level → Place.priceLevel (int, default 0)",
+    "address":         "result.vicinity → Place.address",
+    "latitude":        "result.geometry.location.lat → Place.latitude",
+    "longitude":       "result.geometry.location.lng → Place.longitude",
+    "description":     "result.editorial_summary.overview → Place.description (only from Details endpoint)",
+    "photo_reference": "result.photos[0].photo_reference → Place.photoReference",
+    "open_now":        "result.opening_hours.open_now → Place.openNow (bool → int for SQLite)"
+  },
+
+  "google_type_to_app_category": {
+    "restaurant": "restaurant",
+    "cafe": "cafe",
+    "tourist_attraction": "attraction",
+    "museum": "attraction",
+    "park": "attraction",
+    "shopping_mall": "shopping",
+    "store": "shopping",
+    "bar": "nightlife",
+    "night_club": "nightlife"
+  }
+}

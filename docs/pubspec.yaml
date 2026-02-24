@@ -1,0 +1,5 @@
+# This file is intentionally minimal — it is NOT the project pubspec.
+# The real pubspec.yaml is at the project root: travel/pubspec.yaml
+name: docs_placeholder
+environment:
+  sdk: '>=3.0.0 <4.0.0'
