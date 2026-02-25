@@ -1,4 +1,6 @@
 // lib/main.dart
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,16 +12,34 @@ import 'providers/itinerary_provider.dart';
 import 'providers/map_provider.dart';
 import 'services/api_service.dart';
 import 'services/mock_api_service.dart';
+import 'utils/app_logger.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final ApiService apiService =
-      useMockApi ? MockApiService() : ApiService(apiKey: googleApiKey);
+  // Catch widget build errors and layout failures (e.g. blank white screen).
+  FlutterError.onError = (FlutterErrorDetails details) {
+    AppLogger.fatal(
+      'Flutter error: ${details.exceptionAsString()}',
+      stack: details.stack,
+    );
+    FlutterError.presentError(details);
+  };
 
-  if (useMockApi) {
-    // ignore: avoid_print
-    debugPrint('⚠️  Running in MOCK mode — no real API key detected.');
+  // Catch async errors that escape all try/catch blocks.
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    AppLogger.fatal('Unhandled async error', error: error, stack: stack);
+    return true; // Prevents crash on some platforms.
+  };
+
+  final bool mockMode = useMockApi;
+  final ApiService apiService =
+      mockMode ? MockApiService() : ApiService(apiKey: googleApiKey);
+
+  if (mockMode) {
+    AppLogger.warn('[App] Running in MOCK mode — no real API key detected.');
+  } else {
+    AppLogger.info('[App] Running with real Google Places API.');
   }
 
   runApp(
