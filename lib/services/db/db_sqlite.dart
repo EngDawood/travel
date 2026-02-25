@@ -9,6 +9,7 @@ import '../../models/place.dart';
 import '../../models/itinerary.dart';
 import '../../models/itinerary_place.dart';
 import 'db_interface.dart';
+import '../../utils/app_logger.dart';
 
 class SqliteDb implements DbInterface {
   static Database? _db;
@@ -19,9 +20,17 @@ class SqliteDb implements DbInterface {
   }
 
   Future<Database> _initDb() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'travel.db');
-    return openDatabase(path, version: 1, onCreate: _onCreate);
+    try {
+      AppLogger.info('[DB] Initialising SQLite database...');
+      final dbPath = await getDatabasesPath();
+      final path = join(dbPath, 'travel.db');
+      final db = await openDatabase(path, version: 1, onCreate: _onCreate);
+      AppLogger.info('[DB] Database ready at $path');
+      return db;
+    } catch (e, stack) {
+      AppLogger.fatal('[DB] Failed to initialise database', error: e, stack: stack);
+      rethrow;
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
