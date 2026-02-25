@@ -1,10 +1,13 @@
 // lib/providers/places_provider.dart
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/place.dart';
 import '../services/api_service.dart';
 import '../services/database_helper.dart';
 import '../config/constants.dart';
+import '../utils/app_logger.dart';
 
 class PlacesProvider extends ChangeNotifier {
   List<Place> _fetchedPlaces = [];
@@ -44,18 +47,29 @@ class PlacesProvider extends ChangeNotifier {
   Future<void> fetchPlaces(List<PlaceCategory> categories) async {
     _setLoading(true);
     _error = null;
+    AppLogger.info('[Places] Fetching ${categories.length} category(ies) near $_currentCity');
     try {
       final places = await _api.searchNearbyMultiple(
         lat: _cityLat,
         lng: _cityLng,
         categories: categories,
       );
-      // Cache to SQLite
-      await _db.upsertPlaces(places);
+      AppLogger.info('[Places] Fetched ${places.length} places');
+      try {
+        await _db.upsertPlaces(places);
+      } catch (dbErr, dbStack) {
+        AppLogger.warn('[Places] DB cache failed (non-fatal): $dbErr');
+        AppLogger.error('[Places] DB cache stack', error: dbErr, stack: dbStack);
+      }
       _fetchedPlaces = places;
-    } on ApiException catch (e) {
+    } on ApiException catch (e, stack) {
+      AppLogger.error('[Places] API error', error: e, stack: stack);
       _error = e.message;
-    } catch (e) {
+    } on TimeoutException catch (e, stack) {
+      AppLogger.error('[Places] Timeout', error: e, stack: stack);
+      _error = 'Request timed out. Check your connection.';
+    } catch (e, stack) {
+      AppLogger.error('[Places] Unexpected error', error: e, stack: stack);
       _error = 'Failed to fetch places. Please try again.';
     } finally {
       _setLoading(false);
