@@ -1,9 +1,11 @@
 // lib/services/api_service.dart
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../config/constants.dart';
 import '../models/place.dart';
+import '../utils/app_logger.dart';
 
 class ApiService {
   final String apiKey;
@@ -31,7 +33,7 @@ class ApiService {
       },
     );
 
-    final response = await http.get(uri);
+    final response = await _get(uri);
     _checkStatus(response);
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -83,7 +85,7 @@ class ApiService {
       },
     );
 
-    final response = await http.get(uri);
+    final response = await _get(uri);
     _checkStatus(response);
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -116,7 +118,7 @@ class ApiService {
       },
     );
 
-    final response = await http.get(uri);
+    final response = await _get(uri);
     _checkStatus(response);
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -144,7 +146,7 @@ class ApiService {
       },
     );
 
-    final response = await http.get(uri);
+    final response = await _get(uri);
     _checkStatus(response);
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -205,6 +207,22 @@ class ApiService {
   }
 
   // ─── HELPERS ──────────────────────────────────────────────────────────────
+
+  /// Performs a GET request with a 10-second timeout and logs the call.
+  Future<http.Response> _get(Uri uri) async {
+    AppLogger.info('[API] GET ${uri.path}${uri.query.isNotEmpty ? "?${uri.query.replaceAll(RegExp(r'key=[^&]+'), 'key=***')}" : ""}');
+    try {
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      AppLogger.info('[API] ${response.statusCode} ${uri.path}');
+      return response;
+    } on TimeoutException {
+      AppLogger.error('[API] Request timed out: ${uri.path}');
+      rethrow;
+    } catch (e, stack) {
+      AppLogger.error('[API] Request failed: ${uri.path}', error: e, stack: stack);
+      rethrow;
+    }
+  }
 
   void _checkStatus(http.Response response) {
     if (response.statusCode != 200) {
