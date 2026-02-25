@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../models/itinerary.dart';
 import '../models/place.dart';
 import '../services/database_helper.dart';
+import '../utils/app_logger.dart';
 import '../utils/itinerary_generator.dart';
 
 class ItineraryProvider extends ChangeNotifier {
@@ -26,13 +27,22 @@ class ItineraryProvider extends ChangeNotifier {
     required String city,
     required int userId,
   }) {
-    final slotMap = ItineraryGenerator.generate(selectedPlaces);
-    _currentItinerary = ItineraryGenerator.buildItinerary(
-      slotMap: slotMap,
-      city: city,
-      userId: userId,
-    );
-    notifyListeners();
+    _error = null;
+    try {
+      AppLogger.info('[Itinerary] Generating for $city with ${selectedPlaces.length} places');
+      final slotMap = ItineraryGenerator.generate(selectedPlaces);
+      _currentItinerary = ItineraryGenerator.buildItinerary(
+        slotMap: slotMap,
+        city: city,
+        userId: userId,
+      );
+      AppLogger.info('[Itinerary] Generated: ${_currentItinerary?.places.length ?? 0} slots');
+      notifyListeners();
+    } catch (e, stack) {
+      AppLogger.error('[Itinerary] Generation failed', error: e, stack: stack);
+      _error = 'Failed to generate itinerary. Please try again.';
+      notifyListeners();
+    }
   }
 
   /// Save the current itinerary with a user-given [name].
@@ -46,8 +56,9 @@ class ItineraryProvider extends ChangeNotifier {
       _currentItinerary = toSave.copyWith(id: id);
       notifyListeners();
       return true;
-    } catch (e) {
-      _error = 'Failed to save itinerary.';
+    } catch (e, stack) {
+      AppLogger.error('[Itinerary] Failed to save', error: e, stack: stack);
+      _error = 'Local storage error. Try restarting the app.';
       return false;
     } finally {
       _setLoading(false);
@@ -60,8 +71,9 @@ class ItineraryProvider extends ChangeNotifier {
     _error = null;
     try {
       _savedItineraries = await _db.getItinerariesForUser(userId);
-    } catch (e) {
-      _error = 'Failed to load saved itineraries.';
+    } catch (e, stack) {
+      AppLogger.error('[Itinerary] Failed to load saved', error: e, stack: stack);
+      _error = 'Local storage error. Try restarting the app.';
     } finally {
       _setLoading(false);
     }
@@ -73,8 +85,9 @@ class ItineraryProvider extends ChangeNotifier {
       await _db.deleteItinerary(id);
       _savedItineraries.removeWhere((it) => it.id == id);
       notifyListeners();
-    } catch (e) {
-      _error = 'Failed to delete itinerary.';
+    } catch (e, stack) {
+      AppLogger.error('[Itinerary] Failed to delete id=$id', error: e, stack: stack);
+      _error = 'Local storage error. Try restarting the app.';
       notifyListeners();
     }
   }
@@ -88,8 +101,9 @@ class ItineraryProvider extends ChangeNotifier {
         _savedItineraries[idx] = _savedItineraries[idx].copyWith(name: name);
         notifyListeners();
       }
-    } catch (e) {
-      _error = 'Failed to rename itinerary.';
+    } catch (e, stack) {
+      AppLogger.error('[Itinerary] Failed to rename id=$id', error: e, stack: stack);
+      _error = 'Local storage error. Try restarting the app.';
       notifyListeners();
     }
   }
