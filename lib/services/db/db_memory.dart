@@ -7,6 +7,7 @@ import '../../models/place.dart';
 import '../../models/itinerary.dart';
 import '../../models/itinerary_place.dart';
 import 'db_interface.dart';
+import '../../utils/app_logger.dart';
 
 class InMemoryDb implements DbInterface {
   final Map<int, User> _users = {};
@@ -27,6 +28,7 @@ class InMemoryDb implements DbInterface {
     }
     final id = _nextUserId++;
     _users[id] = user.copyWith(id: id);
+    AppLogger.info('[DB] InMemoryDb: inserted user id=$id email=${user.email}');
     return id;
   }
 
@@ -91,6 +93,7 @@ class InMemoryDb implements DbInterface {
         .map((ip) =>
             ip.copyWith(id: _nextIpId++, itineraryId: id))
         .toList();
+    AppLogger.info('[DB] InMemoryDb: inserted itinerary id=$id city=${itinerary.city}');
     return id;
   }
 
