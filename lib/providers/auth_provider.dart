@@ -1,4 +1,5 @@
 // lib/providers/auth_provider.dart
+import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../models/user.dart';
 import '../services/database_helper.dart';
 import '../services/preferences_service.dart';
+import '../utils/app_logger.dart';
 
 class AuthProvider extends ChangeNotifier {
   User? _currentUser;
@@ -22,10 +24,17 @@ class AuthProvider extends ChangeNotifier {
 
   /// Try to restore session on app start.
   Future<void> restoreSession() async {
-    final userId = await _prefs.getUserId();
-    if (userId != null) {
-      _currentUser = await _db.getUserById(userId);
+    try {
+      final userId = await _prefs.getUserId();
+      if (userId != null) {
+        AppLogger.info('[Auth] Restoring session for userId=$userId');
+        _currentUser = await _db.getUserById(userId);
+        AppLogger.info('[Auth] Session restored: ${_currentUser?.email ?? "user not found"}');
+      }
       notifyListeners();
+    } catch (e, stack) {
+      AppLogger.error('[Auth] Failed to restore session', error: e, stack: stack);
+      // Non-fatal: user will just see login screen.
     }
   }
 
@@ -52,8 +61,9 @@ class AuthProvider extends ChangeNotifier {
       _currentUser = user.copyWith(id: id);
       await _prefs.saveUserId(id);
       return true;
-    } catch (e) {
-      _error = 'Registration failed. Please try again.';
+    } catch (e, stack) {
+      AppLogger.error('[Auth] Registration failed', error: e, stack: stack);
+      _error = _dbErrorMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -80,8 +90,9 @@ class AuthProvider extends ChangeNotifier {
       _currentUser = user;
       await _prefs.saveUserId(user.id!);
       return true;
-    } catch (e) {
-      _error = 'Login failed. Please try again.';
+    } catch (e, stack) {
+      AppLogger.error('[Auth] Login failed', error: e, stack: stack);
+      _error = _dbErrorMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -98,9 +109,13 @@ class AuthProvider extends ChangeNotifier {
   /// Update the current user's preferred categories.
   Future<void> updatePreferences(List<String> categories) async {
     if (_currentUser == null) return;
-    await _db.updateUserCategories(_currentUser!.id!, categories);
-    _currentUser = _currentUser!.copyWith(preferredCategories: categories);
-    notifyListeners();
+    try {
+      await _db.updateUserCategories(_currentUser!.id!, categories);
+      _currentUser = _currentUser!.copyWith(preferredCategories: categories);
+      notifyListeners();
+    } catch (e, stack) {
+      AppLogger.error('[Auth] Failed to update preferences', error: e, stack: stack);
+    }
   }
 
   void clearError() {
@@ -116,5 +131,10 @@ class AuthProvider extends ChangeNotifier {
   String _hashPassword(String password) {
     final bytes = utf8.encode(password);
     return sha256.convert(bytes).toString();
+  }
+
+  String _dbErrorMessage(Object e) {
+    if (e is TimeoutException) return 'Request timed out. Please try again.';
+    return 'Local storage error. Try restarting the app.';
   }
 }
