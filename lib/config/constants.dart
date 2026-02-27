@@ -4,12 +4,12 @@
 /// Pass via: flutter run --dart-define=GOOGLE_API_KEY=your_key_here
 const String googleApiKey = String.fromEnvironment(
   'GOOGLE_API_KEY',
-  defaultValue: 'YOUR_API_KEY_HERE',
+  defaultValue: '',
 );
 
 /// Set to true to use MockApiService instead of real Google Places API.
 /// Automatically enabled when no real API key is provided.
-bool get useMockApi => googleApiKey == 'YOUR_API_KEY_HERE';
+bool get useMockApi => googleApiKey.isEmpty;
 
 const String placesBaseUrl = 'https://maps.googleapis.com/maps/api/place';
 
