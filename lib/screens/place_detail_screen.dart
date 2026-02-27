@@ -26,14 +26,18 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   String? _error;
   bool _isFavorite = false;
 
-  late final ApiService _api;
+  late ApiService _api;
+  bool _apiInitialized = false;
   final DatabaseHelper _db = DatabaseHelper.instance;
   final PreferencesService _prefs = PreferencesService();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _api = context.read<ApiService>();
+    if (!_apiInitialized) {
+      _api = context.read<ApiService>();
+      _apiInitialized = true;
+    }
   }
 
   @override
@@ -43,10 +47,20 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   }
 
   Future<void> _loadPlace() async {
+    if (widget.placeId.isEmpty) {
+      setState(() {
+        _error = 'Invalid place ID.';
+        _isLoading = false;
+      });
+      return;
+    }
+
     final favorited = await _prefs.isFavorite(widget.placeId);
+    if (!mounted) return;
 
     // Try cache first
     final cached = await _db.getPlace(widget.placeId);
+    if (!mounted) return;
     if (cached != null) {
       setState(() {
         _place = cached;
@@ -60,17 +74,20 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     try {
       final place = await _api.getPlaceDetails(widget.placeId, 'attraction');
       await _db.upsertPlace(place);
+      if (!mounted) return;
       setState(() {
         _place = place;
         _isFavorite = favorited;
         _isLoading = false;
       });
     } on ApiException catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.message;
         _isLoading = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _error = 'Failed to load place details.';
         _isLoading = false;
@@ -129,6 +146,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               onPressed: () async {
                 final nowFavorited =
                     await _prefs.toggleFavorite(place.placeId);
+                if (!mounted) return;
                 setState(() => _isFavorite = nowFavorited);
               },
             ),

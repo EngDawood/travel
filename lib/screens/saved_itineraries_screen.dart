@@ -84,14 +84,16 @@ class _SavedItinerariesScreenState extends State<SavedItinerariesScreen> {
                               color: Colors.white),
                         ),
                         confirmDismiss: (_) async {
+                          if (it.id == null) return false;
                           await _confirmDelete(context, it.id!, name);
                           return false; // deletion handled inside
                         },
                         child: SavedItineraryTile(
                           itinerary: it,
                           onTap: () => context.push('/saved/${it.id}'),
-                          onDelete: () =>
-                              _confirmDelete(context, it.id!, name),
+                          onDelete: it.id == null
+                              ? null
+                              : () => _confirmDelete(context, it.id!, name),
                         ),
                       );
                     },

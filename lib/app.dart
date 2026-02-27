@@ -103,7 +103,7 @@ final GoRouter _router = GoRouter(
       path: '/place/:id',
       name: 'placeDetail',
       builder: (context, state) => PlaceDetailScreen(
-        placeId: state.pathParameters['id']!,
+        placeId: state.pathParameters['id'] ?? '',
       ),
     ),
     GoRoute(
@@ -120,7 +120,7 @@ final GoRouter _router = GoRouter(
       path: '/saved/:id',
       name: 'savedDetail',
       builder: (context, state) => SavedItineraryDetailScreen(
-        id: int.parse(state.pathParameters['id']!),
+        id: int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
       ),
     ),
     GoRoute(

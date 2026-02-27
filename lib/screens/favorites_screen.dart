@@ -48,7 +48,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Future<void> _toggleFavorite(String placeId) async {
     await _prefs.toggleFavorite(placeId);
-    await _load();
+    if (mounted) await _load();
   }
 
   @override
@@ -67,7 +67,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     itemBuilder: (context, index) =>
                         _FavoriteTile(
                           place: _places[index],
-                          onTap: () => context.push('/place/${_places[index].placeId}').then((_) => _load()),
+                          onTap: () => context.push('/place/${_places[index].placeId}').then((_) { if (mounted) _load(); }),
                           onToggle: () => _toggleFavorite(_places[index].placeId),
                         ),
                   ),

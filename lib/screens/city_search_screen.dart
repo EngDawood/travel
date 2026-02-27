@@ -17,7 +17,8 @@ class CitySearchScreen extends StatefulWidget {
 
 class _CitySearchScreenState extends State<CitySearchScreen> {
   final TextEditingController _controller = TextEditingController();
-  late final ApiService _api;
+  late ApiService _api;
+  bool _apiInitialized = false;
 
   List<Map<String, dynamic>> _suggestions = [];
   bool _isSearching = false;
@@ -34,7 +35,10 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _api = context.read<ApiService>();
+    if (!_apiInitialized) {
+      _api = context.read<ApiService>();
+      _apiInitialized = true;
+    }
   }
 
   @override
@@ -86,8 +90,10 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
           );
       context.go('/preferences');
     } on ApiException catch (e) {
+      if (!mounted) return;
       setState(() => _error = e.message);
     } catch (_) {
+      if (!mounted) return;
       setState(() => _error = 'Could not load city. Try again.');
     } finally {
       if (mounted) setState(() => _isSearching = false);
@@ -95,10 +101,10 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   }
 
   void _onRecentSearchTap(Map<String, String> search) {
-    _onCitySelected({
-      'description': search['description'],
-      'place_id': search['place_id'],
-    });
+    final description = search['description'];
+    final placeId = search['place_id'];
+    if (description == null || placeId == null) return;
+    _onCitySelected({'description': description, 'place_id': placeId});
   }
 
   void _onPopularDestinationTap(PopularDestination dest) {

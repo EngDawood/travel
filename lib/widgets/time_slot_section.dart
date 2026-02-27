@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/place.dart';
+import '../utils/helpers.dart';
 import '../widgets/itinerary_tile.dart';
 
 class TimeSlotSection extends StatelessWidget {
@@ -73,7 +74,7 @@ class TimeSlotSection extends StatelessWidget {
               Icon(_icon, color: _color, size: 20),
               const SizedBox(width: 8),
               Text(
-                '${slot[0].toUpperCase()}${slot.substring(1)}',
+                capitalize(slot),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
