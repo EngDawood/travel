@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 
 import 'config/theme.dart';
 import 'providers/auth_provider.dart';
+import 'screens/shell_screen.dart';
 import 'screens/auth_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/city_search_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/places_list_screen.dart';
@@ -14,24 +14,67 @@ import 'screens/place_detail_screen.dart';
 import 'screens/itinerary_screen.dart';
 import 'screens/saved_itineraries_screen.dart';
 import 'screens/map_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/account_settings_screen.dart';
 
 final GoRouter _router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/search',
+  redirect: (context, state) {
+    if (state.uri.path == '/') return '/search';
+    return null;
+  },
   routes: [
-    GoRoute(
-      path: '/',
-      name: 'home',
-      builder: (context, state) => const HomeScreen(),
+    // Bottom nav shell with 3 tabs
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          ShellScreen(navigationShell: navigationShell),
+      branches: [
+        // Tab 0: Home (City Search)
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/search',
+              name: 'citySearch',
+              builder: (context, state) => const CitySearchScreen(),
+            ),
+          ],
+        ),
+        // Tab 1: Saved Itineraries
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/saved',
+              name: 'saved',
+              builder: (context, state) => const SavedItinerariesScreen(),
+            ),
+          ],
+        ),
+        // Tab 2: Profile
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              name: 'profile',
+              builder: (context, state) => const ProfileScreen(),
+              routes: [
+                GoRoute(
+                  path: 'settings',
+                  name: 'accountSettings',
+                  builder: (context, state) =>
+                      const AccountSettingsScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
+
+    // Non-tab routes (push on top, hide bottom nav)
     GoRoute(
       path: '/login',
       name: 'login',
       builder: (context, state) => const AuthScreen(),
-    ),
-    GoRoute(
-      path: '/search',
-      name: 'citySearch',
-      builder: (context, state) => const CitySearchScreen(),
     ),
     GoRoute(
       path: '/preferences',
@@ -54,11 +97,6 @@ final GoRouter _router = GoRouter(
       path: '/itinerary',
       name: 'itinerary',
       builder: (context, state) => const ItineraryScreen(),
-    ),
-    GoRoute(
-      path: '/saved',
-      name: 'saved',
-      builder: (context, state) => const SavedItinerariesScreen(),
     ),
     GoRoute(
       path: '/map',

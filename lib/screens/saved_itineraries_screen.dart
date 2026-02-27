@@ -102,11 +102,6 @@ class _SavedItinerariesScreenState extends State<SavedItinerariesScreen> {
                     },
                   ),
                 ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go('/search'),
-        icon: const Icon(Icons.add),
-        label: const Text('Plan a Trip'),
-      ),
     );
   }
 

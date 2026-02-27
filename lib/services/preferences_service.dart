@@ -1,4 +1,6 @@
 // lib/services/preferences_service.dart
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_logger.dart';
@@ -6,6 +8,8 @@ import '../utils/app_logger.dart';
 /// Stores lightweight user session data (logged-in user id).
 class PreferencesService {
   static const _keyUserId = 'user_id';
+  static const _keyRecentSearches = 'recent_searches';
+  static const _maxRecentSearches = 10;
 
   /// Save the logged-in user id.
   Future<void> saveUserId(int id) async {
@@ -27,6 +31,39 @@ class PreferencesService {
     } catch (e, stack) {
       AppLogger.error('[Prefs] Failed to read userId', error: e, stack: stack);
       return null;
+    }
+  }
+
+  /// Get recent city searches.
+  Future<List<Map<String, String>>> getRecentSearches() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_keyRecentSearches);
+      if (raw == null) return [];
+      final decoded = jsonDecode(raw) as List;
+      return decoded
+          .map((e) => Map<String, String>.from(e as Map))
+          .toList();
+    } catch (e, stack) {
+      AppLogger.error('[Prefs] Failed to read recent searches',
+          error: e, stack: stack);
+      return [];
+    }
+  }
+
+  /// Add a city to recent searches (prepend, deduplicate, cap at max).
+  Future<void> addRecentSearch(String description, String placeId) async {
+    try {
+      final current = await getRecentSearches();
+      current.removeWhere((e) => e['place_id'] == placeId);
+      current.insert(0, {'description': description, 'place_id': placeId});
+      final capped = current.take(_maxRecentSearches).toList();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_keyRecentSearches, jsonEncode(capped));
+      AppLogger.info('[Prefs] Saved recent search: $description');
+    } catch (e, stack) {
+      AppLogger.error('[Prefs] Failed to save recent search',
+          error: e, stack: stack);
     }
   }
 

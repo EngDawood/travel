@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../config/popular_destinations.dart';
 import '../providers/places_provider.dart';
 import '../services/api_service.dart';
+import '../widgets/destination_card.dart';
 
 class CitySearchScreen extends StatefulWidget {
   const CitySearchScreen({super.key});
@@ -17,15 +19,23 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   final TextEditingController _controller = TextEditingController();
   late final ApiService _api;
 
+  List<Map<String, dynamic>> _suggestions = [];
+  bool _isSearching = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PlacesProvider>().loadRecentSearches();
+    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _api = context.read<ApiService>();
   }
-
-  List<Map<String, dynamic>> _suggestions = [];
-  bool _isSearching = false;
-  String? _error;
 
   @override
   void dispose() {
@@ -72,6 +82,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
             description,
             latLng['lat']!,
             latLng['lng']!,
+            placeId: placeId,
           );
       context.go('/preferences');
     } on ApiException catch (e) {
@@ -83,64 +94,228 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
     }
   }
 
+  void _onRecentSearchTap(Map<String, String> search) {
+    _onCitySelected({
+      'description': search['description'],
+      'place_id': search['place_id'],
+    });
+  }
+
+  void _onPopularDestinationTap(PopularDestination dest) {
+    if (!mounted) return;
+    context.read<PlacesProvider>().setCity(
+          '${dest.city}, ${dest.country}',
+          dest.lat,
+          dest.lng,
+        );
+    context.go('/preferences');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final recentSearches = context.watch<PlacesProvider>().recentSearches;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Search City')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Where do you want to travel?',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: 'Enter a city name...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _controller.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() => _suggestions = []);
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: _onSearchChanged,
-            ),
-            const SizedBox(height: 8),
-            if (_error != null)
-              Text(_error!, style: const TextStyle(color: Colors.red)),
-            if (_isSearching)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            if (_suggestions.isNotEmpty)
-              Expanded(
-                child: ListView.separated(
-                  itemCount: _suggestions.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final s = _suggestions[index];
-                    return ListTile(
-                      leading: const Icon(Icons.location_city),
-                      title: Text(s['description'] as String),
-                      onTap: () => _onCitySelected(s),
-                    );
-                  },
+      body: SafeArea(
+        child: _suggestions.isNotEmpty || _isSearching
+            ? _buildSearchResults()
+            : _buildHomeContent(recentSearches),
+      ),
+    );
+  }
+
+  Widget _buildHomeContent(List<Map<String, String>> recentSearches) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+      children: [
+        // Header
+        Text(
+          'Where are you going?',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Search for a city to start planning.',
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 24),
+
+        // Search bar
+        _buildSearchBar(),
+
+        if (_error != null) ...[
+          const SizedBox(height: 8),
+          Text(_error!, style: const TextStyle(color: Colors.red)),
+        ],
+
+        // Recent searches
+        if (recentSearches.isNotEmpty) ...[
+          const SizedBox(height: 28),
+          Row(
+            children: [
+              Icon(Icons.history, size: 16, color: Colors.grey[600]),
+              const SizedBox(width: 6),
+              Text(
+                'RECENT SEARCHES',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                  letterSpacing: 0.8,
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: recentSearches.map((search) {
+              return ActionChip(
+                label: Text(search['description'] ?? ''),
+                onPressed: () => _onRecentSearchTap(search),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+
+        // Popular destinations
+        const SizedBox(height: 28),
+        Row(
+          children: [
+            Icon(Icons.trending_up, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(
+              'POPULAR DESTINATIONS',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600],
+                letterSpacing: 0.8,
+              ),
+            ),
           ],
         ),
+        const SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.3,
+          ),
+          itemCount: popularDestinations.length,
+          itemBuilder: (context, index) {
+            final dest = popularDestinations[index];
+            return DestinationCard(
+              city: dest.city,
+              country: dest.country,
+              imageUrl: dest.imageUrl,
+              onTap: () => _onPopularDestinationTap(dest),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchResults() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Where are you going?',
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Search for a city to start planning.',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 24),
+          _buildSearchBar(),
+          if (_error != null) ...[
+            const SizedBox(height: 8),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+          ],
+          if (_isSearching)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          if (_suggestions.isNotEmpty)
+            Expanded(
+              child: ListView.separated(
+                itemCount: _suggestions.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final s = _suggestions[index];
+                  return ListTile(
+                    leading: const Icon(Icons.location_city),
+                    title: Text(s['description'] as String),
+                    onTap: () => _onCitySelected(s),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return TextField(
+      controller: _controller,
+      decoration: InputDecoration(
+        hintText: 'e.g. Paris, Tokyo, New York',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: _controller.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _controller.clear();
+                  setState(() => _suggestions = []);
+                },
+              )
+            : null,
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+      ),
+      onChanged: _onSearchChanged,
     );
   }
 }
