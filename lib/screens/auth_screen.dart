@@ -52,7 +52,7 @@ class _AuthScreenState extends State<AuthScreen>
       password: _loginPasswordCtrl.text,
     );
     if (!mounted) return;
-    if (success) context.go('/');
+    if (success) context.go('/search');
   }
 
   Future<void> _register() async {
@@ -63,7 +63,7 @@ class _AuthScreenState extends State<AuthScreen>
       password: _regPasswordCtrl.text,
     );
     if (!mounted) return;
-    if (success) context.go('/');
+    if (success) context.go('/search');
   }
 
   @override
@@ -128,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen>
               ),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: () => context.go('/'),
+                onPressed: () => context.go('/search'),
                 child: const Text('Continue as Guest'),
               ),
             ],

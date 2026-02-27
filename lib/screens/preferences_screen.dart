@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../config/constants.dart';
 import '../providers/places_provider.dart';
-import '../widgets/category_chip.dart';
+import '../widgets/preference_category_card.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
@@ -43,36 +43,42 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     final city = context.watch<PlacesProvider>().currentCity;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('What are you into?')),
+      appBar: AppBar(title: const Text('What do you like?')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Planning a trip to $city',
-              style: Theme.of(context).textTheme.titleMedium,
+              'What do you like?',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Select the types of places you want to visit.',
+              'Select the types of places you want to visit in $city.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
             ),
             const SizedBox(height: 24),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: PlaceCategory.values.map((category) {
-                return CategoryChip(
-                  category: category,
-                  isSelected: _selected.contains(category),
-                  onTap: () => _toggle(category),
-                );
-              }).toList(),
+            Expanded(
+              child: ListView.separated(
+                itemCount: PlaceCategory.values.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final category = PlaceCategory.values[index];
+                  return PreferenceCategoryCard(
+                    category: category,
+                    isSelected: _selected.contains(category),
+                    onTap: () => _toggle(category),
+                  );
+                },
+              ),
             ),
-            const Spacer(),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(

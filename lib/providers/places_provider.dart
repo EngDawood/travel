@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../models/place.dart';
 import '../services/api_service.dart';
 import '../services/database_helper.dart';
+import '../services/preferences_service.dart';
 import '../config/constants.dart';
 import '../utils/app_logger.dart';
 
@@ -20,26 +21,40 @@ class PlacesProvider extends ChangeNotifier {
   double _cityLat = 0;
   double _cityLng = 0;
 
+  // Recent searches
+  List<Map<String, String>> _recentSearches = [];
+
   List<Place> get fetchedPlaces => _fetchedPlaces;
   List<Place> get selectedPlaces => _selectedPlaces;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get currentCity => _currentCity;
   bool get canGenerateItinerary => _selectedPlaces.length >= 3;
+  List<Map<String, String>> get recentSearches => _recentSearches;
 
   late final ApiService _api;
   final DatabaseHelper _db = DatabaseHelper.instance;
+  final PreferencesService _prefs = PreferencesService();
 
   PlacesProvider([ApiService? apiService])
       : _api = apiService ?? ApiService(apiKey: googleApiKey);
 
-  /// Set the current city context.
-  void setCity(String city, double lat, double lng) {
+  /// Load recent city searches from preferences.
+  Future<void> loadRecentSearches() async {
+    _recentSearches = await _prefs.getRecentSearches();
+    notifyListeners();
+  }
+
+  /// Set the current city context and persist to recent searches.
+  void setCity(String city, double lat, double lng, {String? placeId}) {
     _currentCity = city;
     _cityLat = lat;
     _cityLng = lng;
     _fetchedPlaces = [];
     _selectedPlaces = [];
+    if (placeId != null) {
+      _prefs.addRecentSearch(city, placeId).then((_) => loadRecentSearches());
+    }
     notifyListeners();
   }
 
