@@ -5,7 +5,9 @@
       "name": "Flutter (real API)",
       "request": "launch",
       "type": "dart",
-      "args": ["--dart-define-from-file=.env.json"]
+      "args": [
+        "--dart-define-from-file=.env.json"
+      ]
     },
     {
       "name": "Flutter (mock API)",
