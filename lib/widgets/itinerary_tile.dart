@@ -10,6 +10,7 @@ class ItineraryTile extends StatelessWidget {
   final Color slotColor;
   final bool isEditing;
   final VoidCallback? onRemove;
+  final VoidCallback? onTap;
 
   const ItineraryTile({
     super.key,
@@ -18,11 +19,13 @@ class ItineraryTile extends StatelessWidget {
     required this.slotColor,
     this.isEditing = false,
     this.onRemove,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: CircleAvatar(
         backgroundColor: slotColor.withValues(alpha: 0.15),

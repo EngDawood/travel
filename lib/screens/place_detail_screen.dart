@@ -9,6 +9,7 @@ import '../models/place.dart';
 import '../providers/places_provider.dart';
 import '../services/api_service.dart';
 import '../services/database_helper.dart';
+import '../services/preferences_service.dart';
 import '../utils/helpers.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
@@ -23,9 +24,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   Place? _place;
   bool _isLoading = true;
   String? _error;
+  bool _isFavorite = false;
 
   late final ApiService _api;
   final DatabaseHelper _db = DatabaseHelper.instance;
+  final PreferencesService _prefs = PreferencesService();
 
   @override
   void didChangeDependencies() {
@@ -40,11 +43,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   }
 
   Future<void> _loadPlace() async {
+    final favorited = await _prefs.isFavorite(widget.placeId);
+
     // Try cache first
     final cached = await _db.getPlace(widget.placeId);
     if (cached != null) {
       setState(() {
         _place = cached;
+        _isFavorite = favorited;
         _isLoading = false;
       });
       return;
@@ -56,6 +62,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
       await _db.upsertPlace(place);
       setState(() {
         _place = place;
+        _isFavorite = favorited;
         _isLoading = false;
       });
     } on ApiException catch (e) {
@@ -113,6 +120,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         SliverAppBar(
           expandedHeight: 240,
           pinned: true,
+          actions: [
+            IconButton(
+              icon: Icon(
+                _isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: _isFavorite ? Colors.red : Colors.white,
+              ),
+              onPressed: () async {
+                final nowFavorited =
+                    await _prefs.toggleFavorite(place.placeId);
+                setState(() => _isFavorite = nowFavorited);
+              },
+            ),
+          ],
           flexibleSpace: FlexibleSpaceBar(
             background: place.photoReference != null
                 ? CachedNetworkImage(

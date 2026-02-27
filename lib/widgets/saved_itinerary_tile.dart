@@ -7,13 +7,13 @@ import '../utils/helpers.dart';
 class SavedItineraryTile extends StatelessWidget {
   final Itinerary itinerary;
   final VoidCallback onTap;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
   const SavedItineraryTile({
     super.key,
     required this.itinerary,
     required this.onTap,
-    required this.onDelete,
+    this.onDelete,
   });
 
   @override
@@ -38,10 +38,12 @@ class SavedItineraryTile extends StatelessWidget {
           '${itinerary.city} · ${formatDate(itinerary.date)} · $placeCount places',
           style: const TextStyle(fontSize: 12),
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete_outline, color: Colors.red),
-          onPressed: onDelete,
-        ),
+        trailing: onDelete != null
+            ? IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                onPressed: onDelete,
+              )
+            : null,
         onTap: onTap,
       ),
     );

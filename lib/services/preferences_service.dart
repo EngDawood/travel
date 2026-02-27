@@ -67,6 +67,44 @@ class PreferencesService {
     }
   }
 
+  // ── Favorites ──────────────────────────────────────────────────────────────
+  static const _keyFavorites = 'favorite_ids';
+
+  Future<List<String>> getFavoriteIds() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getStringList(_keyFavorites) ?? [];
+    } catch (e, stack) {
+      AppLogger.error('[Prefs] Failed to read favorites', error: e, stack: stack);
+      return [];
+    }
+  }
+
+  Future<bool> isFavorite(String placeId) async {
+    final ids = await getFavoriteIds();
+    return ids.contains(placeId);
+  }
+
+  /// Toggles favourite state. Returns new state (true = now favourited).
+  Future<bool> toggleFavorite(String placeId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ids = prefs.getStringList(_keyFavorites) ?? [];
+      final nowFavorited = !ids.contains(placeId);
+      if (nowFavorited) {
+        ids.add(placeId);
+      } else {
+        ids.remove(placeId);
+      }
+      await prefs.setStringList(_keyFavorites, ids);
+      AppLogger.info('[Prefs] Toggled favorite placeId=$placeId → $nowFavorited');
+      return nowFavorited;
+    } catch (e, stack) {
+      AppLogger.error('[Prefs] Failed to toggle favorite', error: e, stack: stack);
+      return false;
+    }
+  }
+
   /// Clear session (logout).
   Future<void> clear() async {
     try {

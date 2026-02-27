@@ -9,6 +9,7 @@ class TimeSlotSection extends StatelessWidget {
   final List<Place> places;
   final bool isEditing;
   final void Function(Place)? onRemove;
+  final void Function(Place)? onPlaceTap;
 
   const TimeSlotSection({
     super.key,
@@ -16,6 +17,7 @@ class TimeSlotSection extends StatelessWidget {
     required this.places,
     this.isEditing = false,
     this.onRemove,
+    this.onPlaceTap,
   });
 
   IconData get _icon {
@@ -104,6 +106,7 @@ class TimeSlotSection extends StatelessWidget {
               slotColor: _color,
               isEditing: isEditing,
               onRemove: onRemove != null ? () => onRemove!(place) : null,
+              onTap: onPlaceTap != null ? () => onPlaceTap!(place) : null,
             );
           }),
         const Divider(height: 1),

@@ -61,13 +61,13 @@ class ProfileScreen extends StatelessWidget {
             _ProfileMenuItem(
               icon: Icons.favorite_outline,
               label: 'Favorites',
-              onTap: () {},
+              onTap: () => context.go('/favorites'),
             ),
             const SizedBox(height: 12),
             _ProfileMenuItem(
               icon: Icons.history,
               label: 'History',
-              onTap: () {},
+              onTap: () => context.push('/history'),
             ),
           ],
         ),

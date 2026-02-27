@@ -8,11 +8,14 @@ import 'providers/auth_provider.dart';
 import 'screens/shell_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/city_search_screen.dart';
+import 'screens/favorites_screen.dart';
+import 'screens/history_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/places_list_screen.dart';
 import 'screens/place_detail_screen.dart';
 import 'screens/itinerary_screen.dart';
 import 'screens/saved_itineraries_screen.dart';
+import 'screens/saved_itinerary_detail_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/account_settings_screen.dart';
@@ -49,7 +52,17 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
-        // Tab 2: Profile
+        // Tab 2: Favourites
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/favorites',
+              name: 'favorites',
+              builder: (context, state) => const FavoritesScreen(),
+            ),
+          ],
+        ),
+        // Tab 3: Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -102,6 +115,18 @@ final GoRouter _router = GoRouter(
       path: '/map',
       name: 'map',
       builder: (context, state) => const MapScreen(),
+    ),
+    GoRoute(
+      path: '/saved/:id',
+      name: 'savedDetail',
+      builder: (context, state) => SavedItineraryDetailScreen(
+        id: int.parse(state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/history',
+      name: 'history',
+      builder: (context, state) => const HistoryScreen(),
     ),
   ],
 );

@@ -89,12 +89,7 @@ class _SavedItinerariesScreenState extends State<SavedItinerariesScreen> {
                         },
                         child: SavedItineraryTile(
                           itinerary: it,
-                          onTap: () {
-                            context
-                                .read<ItineraryProvider>()
-                                .viewItinerary(it);
-                            context.go('/itinerary');
-                          },
+                          onTap: () => context.push('/saved/${it.id}'),
                           onDelete: () =>
                               _confirmDelete(context, it.id!, name),
                         ),
