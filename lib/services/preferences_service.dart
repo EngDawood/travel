@@ -105,6 +105,29 @@ class PreferencesService {
     }
   }
 
+  // ── Locale ─────────────────────────────────────────────────────────────────
+  static const _keyLocale = 'locale_code';
+
+  Future<void> saveLocale(String languageCode) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_keyLocale, languageCode);
+      AppLogger.info('[Prefs] Saved locale=$languageCode');
+    } catch (e, stack) {
+      AppLogger.error('[Prefs] Failed to save locale', error: e, stack: stack);
+    }
+  }
+
+  Future<String?> getLocale() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_keyLocale);
+    } catch (e, stack) {
+      AppLogger.error('[Prefs] Failed to read locale', error: e, stack: stack);
+      return null;
+    }
+  }
+
   /// Clear session (logout).
   Future<void> clear() async {
     try {

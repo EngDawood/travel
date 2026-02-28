@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../config/popular_destinations.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../providers/places_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/destination_card.dart';
@@ -56,21 +57,26 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
       _isSearching = true;
       _error = null;
     });
+    final l10n = AppLocalizations.of(context);
     try {
       final results = await _api.autocompleteCity(input);
+      if (!mounted) return;
       setState(() => _suggestions = results);
     } on ApiException catch (e) {
+      if (!mounted) return;
       setState(() => _error = e.message);
     } catch (_) {
-      setState(() => _error = 'Search failed. Check your connection.');
+      if (!mounted) return;
+      setState(() => _error = l10n.citySearchFailed);
     } finally {
-      setState(() => _isSearching = false);
+      if (mounted) setState(() => _isSearching = false);
     }
   }
 
   Future<void> _onCitySelected(Map<String, dynamic> suggestion) async {
     final description = suggestion['description'] as String;
     final placeId = suggestion['place_id'] as String;
+    final l10n = AppLocalizations.of(context);
 
     setState(() {
       _isSearching = true;
@@ -94,7 +100,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
       setState(() => _error = e.message);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = 'Could not load city. Try again.');
+      setState(() => _error = l10n.citySearchCityFailed);
     } finally {
       if (mounted) setState(() => _isSearching = false);
     }
@@ -131,12 +137,13 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   }
 
   Widget _buildHomeContent(List<Map<String, String>> recentSearches) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
       children: [
         // Header
         Text(
-          'Where are you going?',
+          l10n.citySearchTitle,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -144,7 +151,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Search for a city to start planning.',
+          l10n.citySearchSubtitle,
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -153,7 +160,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
         const SizedBox(height: 24),
 
         // Search bar
-        _buildSearchBar(),
+        _buildSearchBar(l10n),
 
         if (_error != null) ...[
           const SizedBox(height: 8),
@@ -168,7 +175,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
               Icon(Icons.history, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 6),
               Text(
-                'RECENT SEARCHES',
+                l10n.citySearchRecentSearches,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -201,7 +208,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
             Icon(Icons.trending_up, size: 16, color: Colors.grey[600]),
             const SizedBox(width: 6),
             Text(
-              'POPULAR DESTINATIONS',
+              l10n.citySearchPopularDestinations,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -237,13 +244,14 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   }
 
   Widget _buildSearchResults() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Where are you going?',
+            l10n.citySearchTitle,
             style: Theme.of(context)
                 .textTheme
                 .headlineMedium
@@ -251,14 +259,14 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Search for a city to start planning.',
+            l10n.citySearchSubtitle,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
                 ?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 24),
-          _buildSearchBar(),
+          _buildSearchBar(l10n),
           if (_error != null) ...[
             const SizedBox(height: 8),
             Text(_error!, style: const TextStyle(color: Colors.red)),
@@ -288,11 +296,11 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(AppLocalizations l10n) {
     return TextField(
       controller: _controller,
       decoration: InputDecoration(
-        hintText: 'e.g. Paris, Tokyo, New York',
+        hintText: l10n.citySearchHint,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _controller.text.isNotEmpty
             ? IconButton(

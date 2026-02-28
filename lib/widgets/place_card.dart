@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/place.dart';
 import '../services/api_service.dart';
 import '../utils/helpers.dart';
@@ -169,8 +170,26 @@ class _CategoryTag extends StatelessWidget {
   final String category;
   const _CategoryTag({required this.category});
 
+  String _localizedLabel(AppLocalizations l10n) {
+    switch (category) {
+      case 'restaurant':
+        return l10n.catRestaurant.toUpperCase();
+      case 'cafe':
+        return l10n.catCafe.toUpperCase();
+      case 'attraction':
+        return l10n.catAttraction.toUpperCase();
+      case 'shopping':
+        return l10n.catShopping.toUpperCase();
+      case 'nightlife':
+        return l10n.catNightlife.toUpperCase();
+      default:
+        return capitalize(category).toUpperCase();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -178,7 +197,7 @@ class _CategoryTag extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        capitalize(category).toUpperCase(),
+        _localizedLabel(l10n),
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,

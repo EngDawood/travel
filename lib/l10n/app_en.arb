@@ -1,0 +1,369 @@
+{
+  "@@locale": "en",
+
+  "navHome": "Home",
+  "@navHome": {},
+
+  "navSaved": "Saved",
+  "@navSaved": {},
+
+  "navFavourites": "Favourites",
+  "@navFavourites": {},
+
+  "navProfile": "Settings",
+  "@navProfile": {},
+
+  "citySearchTitle": "Where are you going?",
+  "@citySearchTitle": {},
+
+  "citySearchSubtitle": "Search for a city to start planning.",
+  "@citySearchSubtitle": {},
+
+  "citySearchHint": "e.g. Paris, Tokyo, New York",
+  "@citySearchHint": {},
+
+  "citySearchRecentSearches": "RECENT SEARCHES",
+  "@citySearchRecentSearches": {},
+
+  "citySearchPopularDestinations": "POPULAR DESTINATIONS",
+  "@citySearchPopularDestinations": {},
+
+  "citySearchFailed": "Search failed. Check your connection.",
+  "@citySearchFailed": {},
+
+  "citySearchCityFailed": "Could not load city. Try again.",
+  "@citySearchCityFailed": {},
+
+  "authWelcome": "Welcome",
+  "@authWelcome": {},
+
+  "authLoginTab": "Login",
+  "@authLoginTab": {},
+
+  "authRegisterTab": "Register",
+  "@authRegisterTab": {},
+
+  "authEmail": "Email",
+  "@authEmail": {},
+
+  "authPassword": "Password",
+  "@authPassword": {},
+
+  "authUsername": "Username",
+  "@authUsername": {},
+
+  "authLoginButton": "Login",
+  "@authLoginButton": {},
+
+  "authCreateAccount": "Create Account",
+  "@authCreateAccount": {},
+
+  "authContinueAsGuest": "Continue as Guest",
+  "@authContinueAsGuest": {},
+
+  "preferencesTitle": "What do you like?",
+  "@preferencesTitle": {},
+
+  "preferencesSubtitle": "Select the types of places you want to visit in {city}.",
+  "@preferencesSubtitle": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+
+  "preferencesFindPlaces": "Find Places",
+  "@preferencesFindPlaces": {},
+
+  "preferencesSelectAtLeastOne": "Please select at least one category.",
+  "@preferencesSelectAtLeastOne": {},
+
+  "categoryRestaurants": "Restaurants",
+  "@categoryRestaurants": {},
+
+  "categoryCafes": "Cafes",
+  "@categoryCafes": {},
+
+  "categoryAttractions": "Attractions",
+  "@categoryAttractions": {},
+
+  "categoryShopping": "Shopping",
+  "@categoryShopping": {},
+
+  "categoryNightlife": "Nightlife",
+  "@categoryNightlife": {},
+
+  "catRestaurant": "Restaurant",
+  "@catRestaurant": {},
+
+  "catCafe": "Cafe",
+  "@catCafe": {},
+
+  "catAttraction": "Attraction",
+  "@catAttraction": {},
+
+  "catShopping": "Shopping",
+  "@catShopping": {},
+
+  "catNightlife": "Nightlife",
+  "@catNightlife": {},
+
+  "placesListTitle": "Select Places",
+  "@placesListTitle": {},
+
+  "placesListSubtitle": "Choose at least 3 places to visit.",
+  "@placesListSubtitle": {},
+
+  "placesListLoading": "Finding great places...",
+  "@placesListLoading": {},
+
+  "placesListEmpty": "No places found. Try different categories or a broader area.",
+  "@placesListEmpty": {},
+
+  "placesListGenerate": "Generate",
+  "@placesListGenerate": {},
+
+  "placesListViewMap": "View on Map",
+  "@placesListViewMap": {},
+
+  "placesListGoBack": "Go Back",
+  "@placesListGoBack": {},
+
+  "placesListSelectMore": "{count, plural, =1{Select 1 more place} other{Select {count} more places}}",
+  "@placesListSelectMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "placesListSelectedCount": "{count} places selected",
+  "@placesListSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "placeDetailGoBack": "Go Back",
+  "@placeDetailGoBack": {},
+
+  "placeDetailOpen": "Open",
+  "@placeDetailOpen": {},
+
+  "placeDetailClosed": "Closed",
+  "@placeDetailClosed": {},
+
+  "placeDetailAbout": "About",
+  "@placeDetailAbout": {},
+
+  "placeDetailViewMap": "View on Map",
+  "@placeDetailViewMap": {},
+
+  "placeDetailAddItinerary": "Add to Itinerary",
+  "@placeDetailAddItinerary": {},
+
+  "placeDetailAdded": "Added",
+  "@placeDetailAdded": {},
+
+  "placeDetailRemovedSnack": "Removed from itinerary",
+  "@placeDetailRemovedSnack": {},
+
+  "placeDetailAddedSnack": "Added to itinerary",
+  "@placeDetailAddedSnack": {},
+
+  "placeDetailFree": "Free",
+  "@placeDetailFree": {},
+
+  "itineraryYourItinerary": "Your Itinerary",
+  "@itineraryYourItinerary": {},
+
+  "itineraryEdit": "Edit",
+  "@itineraryEdit": {},
+
+  "itineraryDone": "Done",
+  "@itineraryDone": {},
+
+  "itineraryNoItinerary": "No itinerary generated yet.",
+  "@itineraryNoItinerary": {},
+
+  "itinerarySaveButton": "Save Itinerary",
+  "@itinerarySaveButton": {},
+
+  "itinerarySaveDialogTitle": "Save Itinerary",
+  "@itinerarySaveDialogTitle": {},
+
+  "itinerarySaveHint": "Give your plan a name",
+  "@itinerarySaveHint": {},
+
+  "itineraryCancel": "Cancel",
+  "@itineraryCancel": {},
+
+  "itinerarySave": "Save",
+  "@itinerarySave": {},
+
+  "itinerarySavedSuccess": "Itinerary saved!",
+  "@itinerarySavedSuccess": {},
+
+  "itinerarySaveFailed": "Failed to save. Try again.",
+  "@itinerarySaveFailed": {},
+
+  "itineraryDefaultName": "Trip to {city}",
+  "@itineraryDefaultName": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+
+  "nPlaces": "{count, plural, =1{1 place} other{{count} places}}",
+  "@nPlaces": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "savedItinerariesTitle": "Saved Itineraries",
+  "@savedItinerariesTitle": {},
+
+  "savedItinerariesEmpty": "No saved itineraries yet.",
+  "@savedItinerariesEmpty": {},
+
+  "savedPlanFirstTrip": "Plan Your First Trip",
+  "@savedPlanFirstTrip": {},
+
+  "savedDeleteTitle": "Delete Itinerary",
+  "@savedDeleteTitle": {},
+
+  "savedDeleteContent": "Delete \"{name}\"? This cannot be undone.",
+  "@savedDeleteContent": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+
+  "savedCancel": "Cancel",
+  "@savedCancel": {},
+
+  "savedDelete": "Delete",
+  "@savedDelete": {},
+
+  "savedDetailItinerary": "Itinerary",
+  "@savedDetailItinerary": {},
+
+  "savedDetailNotFound": "Itinerary not found.",
+  "@savedDetailNotFound": {},
+
+  "savedDetailLoadFailed": "Failed to load itinerary.",
+  "@savedDetailLoadFailed": {},
+
+  "savedDetailGoBack": "Go Back",
+  "@savedDetailGoBack": {},
+
+  "favTitle": "Favourites",
+  "@favTitle": {},
+
+  "favEmpty": "No favourites yet. Tap ♥ on a place to save it.",
+  "@favEmpty": {},
+
+  "profileTitle": "Profile",
+  "@profileTitle": {},
+
+  "profileAccountSettings": "Account Settings",
+  "@profileAccountSettings": {},
+
+  "profileFavorites": "Favorites",
+  "@profileFavorites": {},
+
+  "profileHistory": "History",
+  "@profileHistory": {},
+
+  "accountSettingsTitle": "Account Settings",
+  "@accountSettingsTitle": {},
+
+  "accountSettingsSubtitle": "Manage your account details and preferences.",
+  "@accountSettingsSubtitle": {},
+
+  "accountProfileInfo": "PROFILE INFORMATION",
+  "@accountProfileInfo": {},
+
+  "accountName": "Name",
+  "@accountName": {},
+
+  "accountEmail": "Email",
+  "@accountEmail": {},
+
+  "accountSecurityPrefs": "SECURITY & PREFERENCES",
+  "@accountSecurityPrefs": {},
+
+  "accountChangePassword": "Change Password",
+  "@accountChangePassword": {},
+
+  "accountNotifications": "Notifications",
+  "@accountNotifications": {},
+
+  "accountLanguage": "Language",
+  "@accountLanguage": {},
+
+  "accountLogOut": "Log Out",
+  "@accountLogOut": {},
+
+  "languageEnglish": "English",
+  "@languageEnglish": {},
+
+  "languageArabic": "Arabic (العربية)",
+  "@languageArabic": {},
+
+  "historyTitle": "Trip History",
+  "@historyTitle": {},
+
+  "historyEmpty": "No trips yet.",
+  "@historyEmpty": {},
+
+  "historyPlanFirstTrip": "Plan Your First Trip",
+  "@historyPlanFirstTrip": {},
+
+  "mapTitle": "Map",
+  "@mapTitle": {},
+
+  "mapNoPlaces": "No places selected yet.",
+  "@mapNoPlaces": {},
+
+  "mapGoToPlaces": "Go to Places",
+  "@mapGoToPlaces": {},
+
+  "mapWebFallback": "Interactive map is available on Android & iOS. Showing place list with coordinates.",
+  "@mapWebFallback": {},
+
+  "mapDetails": "Details",
+  "@mapDetails": {},
+
+  "slotMorning": "Morning",
+  "@slotMorning": {},
+
+  "slotAfternoon": "Afternoon",
+  "@slotAfternoon": {},
+
+  "slotEvening": "Evening",
+  "@slotEvening": {},
+
+  "slotMorningTime": "8:00 AM – 12:00 PM",
+  "@slotMorningTime": {},
+
+  "slotAfternoonTime": "12:00 PM – 5:00 PM",
+  "@slotAfternoonTime": {},
+
+  "slotEveningTime": "5:00 PM – 10:00 PM",
+  "@slotEveningTime": {},
+
+  "slotNoPlaces": "No places assigned to this slot.",
+  "@slotNoPlaces": {}
+}

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/auth_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -10,13 +11,14 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final auth = context.watch<AuthProvider>();
     final user = auth.currentUser;
     final name = user?.username ?? 'Guest';
     final email = user?.email ?? 'guest@wanderplan.com';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l10n.profileTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
@@ -54,19 +56,19 @@ class ProfileScreen extends StatelessWidget {
             // Menu items
             _ProfileMenuItem(
               icon: Icons.settings,
-              label: 'Account Settings',
+              label: l10n.profileAccountSettings,
               onTap: () => context.go('/profile/settings'),
             ),
             const SizedBox(height: 12),
             _ProfileMenuItem(
               icon: Icons.favorite_outline,
-              label: 'Favorites',
+              label: l10n.profileFavorites,
               onTap: () => context.go('/favorites'),
             ),
             const SizedBox(height: 12),
             _ProfileMenuItem(
               icon: Icons.history,
-              label: 'History',
+              label: l10n.profileHistory,
               onTap: () => context.push('/history'),
             ),
           ],

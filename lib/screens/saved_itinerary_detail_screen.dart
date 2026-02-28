@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/itinerary.dart';
 import '../models/place.dart';
 import '../services/database_helper.dart';
@@ -38,6 +39,7 @@ class _SavedItineraryDetailScreenState
   }
 
   Future<void> _load() async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _isLoading = true;
       _error = null;
@@ -45,10 +47,12 @@ class _SavedItineraryDetailScreenState
     try {
       final itinerary = await _db.getItinerary(widget.id);
       if (itinerary == null) {
-        setState(() {
-          _error = 'Itinerary not found.';
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _error = l10n.savedDetailNotFound;
+            _isLoading = false;
+          });
+        }
         return;
       }
 
@@ -77,7 +81,7 @@ class _SavedItineraryDetailScreenState
     } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load itinerary.';
+          _error = AppLocalizations.of(context).savedDetailLoadFailed;
           _isLoading = false;
         });
       }
@@ -86,6 +90,7 @@ class _SavedItineraryDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: _itinerary != null
@@ -105,17 +110,17 @@ class _SavedItineraryDetailScreenState
                   ),
                 ],
               )
-            : const Text('Itinerary'),
+            : Text(l10n.savedDetailItinerary),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildError()
-              : _buildContent(),
+              ? _buildError(l10n)
+              : _buildContent(l10n),
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -126,15 +131,16 @@ class _SavedItineraryDetailScreenState
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.pop(),
-            child: const Text('Go Back'),
+            child: Text(l10n.savedDetailGoBack),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(AppLocalizations l10n) {
     final itinerary = _itinerary!;
+    final locale = Localizations.localeOf(context).languageCode;
     final totalPlaces =
         _slotMap.values.fold(0, (sum, list) => sum + list.length);
 
@@ -150,7 +156,7 @@ class _SavedItineraryDetailScreenState
               .primary
               .withValues(alpha: 0.08),
           child: Text(
-            '${formatDate(itinerary.date)} · $totalPlaces places',
+            '${formatDate(itinerary.date, locale: locale)} · ${l10n.nPlaces(totalPlaces)}',
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w500,

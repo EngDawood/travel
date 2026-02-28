@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/place.dart';
 import '../services/api_service.dart';
 import '../services/database_helper.dart';
@@ -53,12 +54,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Favourites')),
+      appBar: AppBar(title: Text(l10n.favTitle)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _places.isEmpty
-              ? _buildEmpty()
+              ? _buildEmpty(l10n)
               : RefreshIndicator(
                   onRefresh: _load,
                   child: ListView.builder(
@@ -67,25 +69,28 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     itemBuilder: (context, index) =>
                         _FavoriteTile(
                           place: _places[index],
-                          onTap: () => context.push('/place/${_places[index].placeId}').then((_) { if (mounted) _load(); }),
-                          onToggle: () => _toggleFavorite(_places[index].placeId),
+                          onTap: () => context
+                              .push('/place/${_places[index].placeId}')
+                              .then((_) { if (mounted) _load(); }),
+                          onToggle: () =>
+                              _toggleFavorite(_places[index].placeId),
                         ),
                   ),
                 ),
     );
   }
 
-  Widget _buildEmpty() {
+  Widget _buildEmpty(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.favorite_border, size: 72, color: Colors.grey),
-          SizedBox(height: 16),
+        children: [
+          const Icon(Icons.favorite_border, size: 72, color: Colors.grey),
+          const SizedBox(height: 16),
           Text(
-            'No favourites yet. Tap \u2665 on a place to save it.',
+            l10n.favEmpty,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: Colors.grey),
+            style: const TextStyle(fontSize: 15, color: Colors.grey),
           ),
         ],
       ),
@@ -104,8 +109,26 @@ class _FavoriteTile extends StatelessWidget {
     required this.onToggle,
   });
 
+  String _localizedCategory(AppLocalizations l10n, String cat) {
+    switch (cat) {
+      case 'restaurant':
+        return l10n.catRestaurant;
+      case 'cafe':
+        return l10n.catCafe;
+      case 'attraction':
+        return l10n.catAttraction;
+      case 'shopping':
+        return l10n.catShopping;
+      case 'nightlife':
+        return l10n.catNightlife;
+      default:
+        return capitalize(cat);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final api = context.read<ApiService>();
     return ListTile(
       contentPadding:
@@ -131,7 +154,7 @@ class _FavoriteTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
       subtitle: Text(
-        '${capitalize(place.category)} · ${place.rating.toStringAsFixed(1)} ★',
+        '${_localizedCategory(l10n, place.category)} · ${place.rating.toStringAsFixed(1)} ★',
         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
       ),
       trailing: IconButton(

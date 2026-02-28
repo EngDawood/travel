@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../config/constants.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../providers/places_provider.dart';
 import '../widgets/preference_category_card.dart';
 
@@ -28,9 +29,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   }
 
   void _onGenerate() {
+    final l10n = AppLocalizations.of(context);
     if (_selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one category.')),
+        SnackBar(content: Text(l10n.preferencesSelectAtLeastOne)),
       );
       return;
     }
@@ -40,17 +42,18 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final city = context.watch<PlacesProvider>().currentCity;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('What do you like?')),
+      appBar: AppBar(title: Text(l10n.preferencesTitle)),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'What do you like?',
+              l10n.preferencesTitle,
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall
@@ -58,7 +61,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Select the types of places you want to visit in $city.',
+              l10n.preferencesSubtitle(city),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
@@ -84,7 +87,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               child: ElevatedButton.icon(
                 onPressed: _selected.isEmpty ? null : _onGenerate,
                 icon: const Icon(Icons.explore),
-                label: const Text('Find Places'),
+                label: Text(l10n.preferencesFindPlaces),
               ),
             ),
           ],

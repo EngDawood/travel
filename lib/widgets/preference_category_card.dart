@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../config/constants.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class PreferenceCategoryCard extends StatelessWidget {
   final PlaceCategory category;
@@ -15,8 +16,24 @@ class PreferenceCategoryCard extends StatelessWidget {
     required this.onTap,
   });
 
+  String _localizedDisplayName(AppLocalizations l10n) {
+    switch (category) {
+      case PlaceCategory.restaurant:
+        return l10n.categoryRestaurants;
+      case PlaceCategory.cafe:
+        return l10n.categoryCafes;
+      case PlaceCategory.attraction:
+        return l10n.categoryAttractions;
+      case PlaceCategory.shopping:
+        return l10n.categoryShopping;
+      case PlaceCategory.nightlife:
+        return l10n.categoryNightlife;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -57,7 +74,7 @@ class PreferenceCategoryCard extends StatelessWidget {
             // Category name
             Expanded(
               child: Text(
-                category.displayName,
+                _localizedDisplayName(l10n),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

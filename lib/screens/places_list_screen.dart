@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/places_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/itinerary_provider.dart';
@@ -13,6 +14,7 @@ class PlacesListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final placesProvider = context.watch<PlacesProvider>();
     final places = placesProvider.fetchedPlaces;
     final isLoading = placesProvider.isLoading;
@@ -23,16 +25,16 @@ class PlacesListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Places'),
+        title: Text(l10n.placesListTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.map_outlined),
-            tooltip: 'View on Map',
+            tooltip: l10n.placesListViewMap,
             onPressed: () => context.go('/map'),
           ),
         ],
       ),
-      body: _buildBody(context, isLoading, error, places),
+      body: _buildBody(context, l10n, isLoading, error, places),
       bottomNavigationBar: places.isNotEmpty
           ? SafeArea(
               child: Container(
@@ -53,8 +55,8 @@ class PlacesListScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         remaining > 0
-                            ? 'Select $remaining more place${remaining == 1 ? '' : 's'}'
-                            : '$selectedCount places selected',
+                            ? l10n.placesListSelectMore(remaining)
+                            : l10n.placesListSelectedCount(selectedCount),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -74,7 +76,7 @@ class PlacesListScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Generate'),
+                        child: Text(l10n.placesListGenerate),
                       ),
                   ],
                 ),
@@ -84,16 +86,16 @@ class PlacesListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, bool isLoading, String? error,
-      List places) {
+  Widget _buildBody(BuildContext context, AppLocalizations l10n, bool isLoading,
+      String? error, List places) {
     if (isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Finding great places...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(l10n.placesListLoading),
           ],
         ),
       );
@@ -112,7 +114,7 @@ class PlacesListScreen extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => context.go('/preferences'),
-                child: const Text('Go Back'),
+                child: Text(l10n.placesListGoBack),
               ),
             ],
           ),
@@ -121,11 +123,11 @@ class PlacesListScreen extends StatelessWidget {
     }
 
     if (places.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'No places found. Try different categories or a broader area.',
+            l10n.placesListEmpty,
             textAlign: TextAlign.center,
           ),
         ),
@@ -141,7 +143,7 @@ class PlacesListScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Select Places',
+                l10n.placesListTitle,
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge
@@ -149,7 +151,7 @@ class PlacesListScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Choose at least 3 places to visit.',
+                l10n.placesListSubtitle,
                 style: TextStyle(fontSize: 13, color: Colors.grey[600]),
               ),
             ],

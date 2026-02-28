@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'config/theme.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'providers/auth_provider.dart';
+import 'providers/locale_provider.dart';
 import 'screens/shell_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/city_search_screen.dart';
@@ -142,19 +144,23 @@ class _TravelAppState extends State<TravelApp> {
   @override
   void initState() {
     super.initState();
-    // Restore login session on app start
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthProvider>().restoreSession();
+      context.read<LocaleProvider>().loadSavedLocale();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.watch<LocaleProvider>().locale;
     return MaterialApp.router(
       title: 'Mini Travel Assistant',
       theme: AppTheme.lightTheme,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
+      locale: locale,
+      supportedLocales: LocaleProvider.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/place.dart';
 import '../providers/itinerary_provider.dart';
 import '../providers/places_provider.dart';
@@ -89,24 +90,25 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   }
 
   Future<void> _onSave() async {
+    final l10n = AppLocalizations.of(context);
     final nameController = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Save Itinerary'),
+        title: Text(l10n.itinerarySaveDialogTitle),
         content: TextField(
           controller: nameController,
           autofocus: true,
-          decoration: const InputDecoration(hintText: 'Give your plan a name'),
+          decoration: InputDecoration(hintText: l10n.itinerarySaveHint),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.itineraryCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Save'),
+            child: Text(l10n.itinerarySave),
           ),
         ],
       ),
@@ -114,8 +116,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
 
     if (confirmed != true || !mounted) return;
 
+    final l10nAfter = AppLocalizations.of(context);
+    final city = context.read<ItineraryProvider>().currentItinerary?.city ?? '';
     final name = nameController.text.trim().isEmpty
-        ? 'Trip to ${context.read<ItineraryProvider>().currentItinerary?.city ?? 'Unknown'}'
+        ? l10nAfter.itineraryDefaultName(city.isEmpty ? '?' : city)
         : nameController.text.trim();
 
     final success = await context.read<ItineraryProvider>().saveItinerary(name);
@@ -123,37 +127,39 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Itinerary saved!')),
+        SnackBar(content: Text(AppLocalizations.of(context).itinerarySavedSuccess)),
       );
       context.go('/saved');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to save. Try again.')),
+        SnackBar(content: Text(AppLocalizations.of(context).itinerarySaveFailed)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final itinerary = context.watch<ItineraryProvider>().currentItinerary;
     final totalPlaces =
         _slotMap.values.fold(0, (sum, list) => sum + list.length);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(itinerary?.city ?? 'Your Itinerary'),
+        title: Text(itinerary?.city ?? l10n.itineraryYourItinerary),
         actions: [
           TextButton(
             onPressed: () => setState(() => _isEditing = !_isEditing),
             child: Text(
-              _isEditing ? 'Done' : 'Edit',
+              _isEditing ? l10n.itineraryDone : l10n.itineraryEdit,
               style: const TextStyle(color: Colors.white),
             ),
           ),
         ],
       ),
       body: itinerary == null
-          ? const Center(child: Text('No itinerary generated yet.'))
+          ? Center(child: Text(l10n.itineraryNoItinerary))
           : Column(
               children: [
                 // Summary banner
@@ -166,7 +172,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                       .primary
                       .withValues(alpha: 0.08),
                   child: Text(
-                    '${formatDate(itinerary.date)} · $totalPlaces places',
+                    '${formatDate(itinerary.date, locale: locale)} · ${l10n.nPlaces(totalPlaces)}',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w500,
@@ -208,7 +214,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _onSave,
                   icon: const Icon(Icons.save),
-                  label: const Text('Save Itinerary'),
+                  label: Text(l10n.itinerarySaveButton),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 48),
                   ),

@@ -1,6 +1,7 @@
 // lib/widgets/time_slot_section.dart
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/place.dart';
 import '../utils/helpers.dart';
 import '../widgets/itinerary_tile.dart';
@@ -47,14 +48,27 @@ class TimeSlotSection extends StatelessWidget {
     }
   }
 
-  String get _timeRange {
+  String _slotLabel(AppLocalizations l10n) {
     switch (slot) {
       case 'morning':
-        return '8:00 AM – 12:00 PM';
+        return l10n.slotMorning;
       case 'afternoon':
-        return '12:00 PM – 5:00 PM';
+        return l10n.slotAfternoon;
       case 'evening':
-        return '5:00 PM – 10:00 PM';
+        return l10n.slotEvening;
+      default:
+        return capitalize(slot);
+    }
+  }
+
+  String _slotTimeRange(AppLocalizations l10n) {
+    switch (slot) {
+      case 'morning':
+        return l10n.slotMorningTime;
+      case 'afternoon':
+        return l10n.slotAfternoonTime;
+      case 'evening':
+        return l10n.slotEveningTime;
       default:
         return '';
     }
@@ -62,6 +76,7 @@ class TimeSlotSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -74,7 +89,7 @@ class TimeSlotSection extends StatelessWidget {
               Icon(_icon, color: _color, size: 20),
               const SizedBox(width: 8),
               Text(
-                capitalize(slot),
+                _slotLabel(l10n),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -83,7 +98,7 @@ class TimeSlotSection extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                _timeRange,
+                _slotTimeRange(l10n),
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ],
@@ -93,7 +108,7 @@ class TimeSlotSection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-              'No places assigned to this slot.',
+              l10n.slotNoPlaces,
               style: TextStyle(color: Colors.grey[500], fontSize: 13),
             ),
           )

@@ -1,6 +1,7 @@
-// lib/widgets/itinerary_tile.dart (list tile for saved itineraries list)
+// lib/widgets/saved_itinerary_tile.dart
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/itinerary.dart';
 import '../utils/helpers.dart';
 
@@ -18,6 +19,8 @@ class SavedItineraryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final placeCount = itinerary.places.length;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -35,7 +38,7 @@ class SavedItineraryTile extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          '${itinerary.city} · ${formatDate(itinerary.date)} · $placeCount places',
+          '${itinerary.city} · ${formatDate(itinerary.date, locale: locale)} · ${l10n.nPlaces(placeCount)}',
           style: const TextStyle(fontSize: 12),
         ),
         trailing: onDelete != null
