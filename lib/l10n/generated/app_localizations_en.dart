@@ -272,7 +272,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favEmpty => 'No favourites yet. Tap ♥ on a place to save it.';
 
   @override
-  String get profileTitle => 'Profile';
+  String get profileTitle => 'Settings';
 
   @override
   String get profileAccountSettings => 'Account Settings';

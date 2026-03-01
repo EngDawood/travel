@@ -18,7 +18,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navFavourites => 'المفضلة';
 
   @override
-  String get navProfile => 'الملف الشخصي';
+  String get navProfile => 'الإعدادات';
 
   @override
   String get citySearchTitle => 'إلى أين تذهب؟';
@@ -271,7 +271,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get favEmpty => 'لا توجد مفضلات بعد. انقر ♥ على مكان لحفظه.';
 
   @override
-  String get profileTitle => 'الملف الشخصي';
+  String get profileTitle => 'الإعدادات';
 
   @override
   String get profileAccountSettings => 'إعدادات الحساب';

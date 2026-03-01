@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileTitle.
   ///
   /// In en, this message translates to:
-  /// **'Profile'**
+  /// **'Settings'**
   String get profileTitle;
 
   /// No description provided for @profileAccountSettings.
