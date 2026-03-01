@@ -4,7 +4,7 @@
   "navHome": "الرئيسية",
   "navSaved": "محفوظة",
   "navFavourites": "المفضلة",
-  "navProfile": "الملف الشخصي",
+  "navProfile": "الإعدادات",
 
   "citySearchTitle": "إلى أين تذهب؟",
   "citySearchSubtitle": "ابحث عن مدينة لبدء التخطيط.",
@@ -93,7 +93,7 @@
   "favTitle": "المفضلة",
   "favEmpty": "لا توجد مفضلات بعد. انقر ♥ على مكان لحفظه.",
 
-  "profileTitle": "الملف الشخصي",
+  "profileTitle": "الإعدادات",
   "profileAccountSettings": "إعدادات الحساب",
   "profileFavorites": "المفضلة",
   "profileHistory": "السجل",
