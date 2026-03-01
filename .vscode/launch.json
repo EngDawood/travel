@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+D    {
+      "name": "Flutter (real API)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=.env.json"
+      ]
+    },
+    {
+      "name": "Flutter (mock API)",
+      "request": "launch",
+      "type": "dart"
+    }
+  ]
+}

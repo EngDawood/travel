@@ -1,16 +1,10 @@
 // lib/utils/helpers.dart
+import 'package:intl/intl.dart';
 
 /// Format a DateTime as a readable date string (e.g. "Mon, 24 Feb 2026").
-String formatDate(DateTime date) {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  final day = days[date.weekday - 1];
-  final month = months[date.month - 1];
-  return '$day, ${date.day} $month ${date.year}';
-}
+/// Pass [locale] to get locale-aware day/month names.
+String formatDate(DateTime date, {String locale = 'en'}) =>
+    DateFormat('EEE, d MMM yyyy', locale).format(date);
 
 /// Convert a price level int to dollar signs.
 String priceLevelToString(int level) {

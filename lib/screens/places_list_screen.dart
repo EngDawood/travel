@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/places_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/itinerary_provider.dart';
@@ -13,50 +14,88 @@ class PlacesListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final placesProvider = context.watch<PlacesProvider>();
     final places = placesProvider.fetchedPlaces;
     final isLoading = placesProvider.isLoading;
     final error = placesProvider.error;
-    final city = placesProvider.currentCity;
     final selectedCount = placesProvider.selectedPlaces.length;
+    final canGenerate = placesProvider.canGenerateItinerary;
+    final remaining = 3 - selectedCount;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(city.isEmpty ? 'Places' : city),
+        title: Text(l10n.placesListTitle),
         actions: [
-          if (selectedCount > 0)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: Center(
-                child: Text(
-                  '$selectedCount selected',
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                ),
-              ),
-            ),
+          IconButton(
+            icon: const Icon(Icons.map_outlined),
+            tooltip: l10n.placesListViewMap,
+            onPressed: () => context.go('/map'),
+          ),
         ],
       ),
-      body: _buildBody(context, isLoading, error, places),
-      floatingActionButton: placesProvider.canGenerateItinerary
-          ? FloatingActionButton.extended(
-              onPressed: () => _onGenerate(context),
-              icon: const Icon(Icons.auto_awesome),
-              label: const Text('Generate Itinerary'),
+      body: _buildBody(context, l10n, isLoading, error, places),
+      bottomNavigationBar: places.isNotEmpty
+          ? SafeArea(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade900,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        remaining > 0
+                            ? l10n.placesListSelectMore(remaining)
+                            : l10n.placesListSelectedCount(selectedCount),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    if (canGenerate)
+                      ElevatedButton(
+                        onPressed: () => _onGenerate(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.grey.shade900,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(l10n.placesListGenerate),
+                      ),
+                  ],
+                ),
+              ),
             )
           : null,
     );
   }
 
-  Widget _buildBody(BuildContext context, bool isLoading, String? error,
-      List places) {
+  Widget _buildBody(BuildContext context, AppLocalizations l10n, bool isLoading,
+      String? error, List places) {
     if (isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Finding great places...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(l10n.placesListLoading),
           ],
         ),
       );
@@ -75,7 +114,7 @@ class PlacesListScreen extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => context.go('/preferences'),
-                child: const Text('Go Back'),
+                child: Text(l10n.placesListGoBack),
               ),
             ],
           ),
@@ -84,11 +123,11 @@ class PlacesListScreen extends StatelessWidget {
     }
 
     if (places.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'No places found. Try different categories or a broader area.',
+            l10n.placesListEmpty,
             textAlign: TextAlign.center,
           ),
         ),
@@ -96,17 +135,31 @@ class PlacesListScreen extends StatelessWidget {
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: Text(
-            'Tap a card to view details. Tap + to add to your itinerary. Select at least 3 to generate.',
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.placesListTitle,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.placesListSubtitle,
+                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              ),
+            ],
           ),
         ),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.only(top: 8, bottom: 16),
             itemCount: places.length,
             itemBuilder: (context, index) {
               final place = places[index];

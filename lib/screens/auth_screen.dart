@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/auth_provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class _AuthScreenState extends State<AuthScreen>
       password: _loginPasswordCtrl.text,
     );
     if (!mounted) return;
-    if (success) context.go('/');
+    if (success) context.go('/search');
   }
 
   Future<void> _register() async {
@@ -63,21 +64,22 @@ class _AuthScreenState extends State<AuthScreen>
       password: _regPasswordCtrl.text,
     );
     if (!mounted) return;
-    if (success) context.go('/');
+    if (success) context.go('/search');
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome'),
+        title: Text(l10n.authWelcome),
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
           indicatorColor: Colors.white,
-          tabs: const [Tab(text: 'Login'), Tab(text: 'Register')],
+          tabs: [Tab(text: l10n.authLoginTab), Tab(text: l10n.authRegisterTab)],
         ),
       ),
       body: TabBarView(
@@ -90,9 +92,9 @@ class _AuthScreenState extends State<AuthScreen>
                 _ErrorBanner(message: auth.error!),
               TextField(
                 controller: _loginEmailCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
+                decoration: InputDecoration(
+                  labelText: l10n.authEmail,
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -101,7 +103,7 @@ class _AuthScreenState extends State<AuthScreen>
                 controller: _loginPasswordCtrl,
                 obscureText: _obscureLogin,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: l10n.authPassword,
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureLogin
@@ -123,13 +125,13 @@ class _AuthScreenState extends State<AuthScreen>
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Login'),
+                      : Text(l10n.authLoginButton),
                 ),
               ),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: () => context.go('/'),
-                child: const Text('Continue as Guest'),
+                onPressed: () => context.go('/search'),
+                child: Text(l10n.authContinueAsGuest),
               ),
             ],
           ),
@@ -141,17 +143,17 @@ class _AuthScreenState extends State<AuthScreen>
                 _ErrorBanner(message: auth.error!),
               TextField(
                 controller: _regUsernameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Username',
-                  prefixIcon: Icon(Icons.person),
+                decoration: InputDecoration(
+                  labelText: l10n.authUsername,
+                  prefixIcon: const Icon(Icons.person),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _regEmailCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
+                decoration: InputDecoration(
+                  labelText: l10n.authEmail,
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -160,7 +162,7 @@ class _AuthScreenState extends State<AuthScreen>
                 controller: _regPasswordCtrl,
                 obscureText: _obscureReg,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: l10n.authPassword,
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureReg
@@ -182,7 +184,7 @@ class _AuthScreenState extends State<AuthScreen>
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Create Account'),
+                      : Text(l10n.authCreateAccount),
                 ),
               ),
             ],

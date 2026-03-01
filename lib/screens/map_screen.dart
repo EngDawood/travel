@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/place.dart';
 import '../providers/map_provider.dart';
 import '../providers/places_provider.dart';
@@ -31,13 +32,16 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final placesProvider = context.watch<PlacesProvider>();
     final places = placesProvider.selectedPlaces;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          placesProvider.currentCity.isEmpty ? 'Map' : placesProvider.currentCity,
+          placesProvider.currentCity.isEmpty
+              ? l10n.mapTitle
+              : placesProvider.currentCity,
         ),
         actions: [
           if (places.isNotEmpty)
@@ -45,14 +49,16 @@ class _MapScreenState extends State<MapScreen> {
               padding: const EdgeInsets.only(right: 12),
               child: Center(
                 child: Text(
-                  '${places.length} places',
+                  l10n.nPlaces(places.length),
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
               ),
             ),
         ],
       ),
-      body: places.isEmpty ? _buildEmpty(context) : _buildContent(context, places),
+      body: places.isEmpty
+          ? _buildEmpty(context, l10n)
+          : _buildContent(context, places),
     );
   }
 
@@ -66,6 +72,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildWebFallback(BuildContext context, List<Place> places) {
+    final l10n = AppLocalizations.of(context);
     final mapProvider = context.watch<MapProvider>();
     final selected = mapProvider.selectedPlace;
 
@@ -79,11 +86,11 @@ class _MapScreenState extends State<MapScreen> {
             children: [
               const Icon(Icons.info_outline, size: 16, color: Colors.orange),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Interactive map is available on Android & iOS. '
-                  'Showing place list with coordinates.',
-                  style: TextStyle(fontSize: 12, color: Colors.orange),
+                  l10n.mapWebFallback,
+                  style:
+                      const TextStyle(fontSize: 12, color: Colors.orange),
                 ),
               ),
             ],
@@ -112,19 +119,19 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.map_outlined, size: 72, color: Colors.grey[300]),
           const SizedBox(height: 16),
-          const Text('No places selected yet.',
-              style: TextStyle(color: Colors.grey)),
+          Text(l10n.mapNoPlaces,
+              style: const TextStyle(color: Colors.grey)),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.go('/places'),
-            child: const Text('Go to Places'),
+            child: Text(l10n.mapGoToPlaces),
           ),
         ],
       ),
@@ -196,8 +203,26 @@ class _PlaceCoordCard extends StatelessWidget {
     required this.onDetails,
   });
 
+  String _localizedCategory(AppLocalizations l10n, String cat) {
+    switch (cat) {
+      case 'restaurant':
+        return l10n.catRestaurant;
+      case 'cafe':
+        return l10n.catCafe;
+      case 'attraction':
+        return l10n.catAttraction;
+      case 'shopping':
+        return l10n.catShopping;
+      case 'nightlife':
+        return l10n.catNightlife;
+      default:
+        return capitalize(cat);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final color = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: onTap,
@@ -239,8 +264,9 @@ class _PlaceCoordCard extends StatelessWidget {
                             fontWeight: FontWeight.bold, fontSize: 14)),
                     const SizedBox(height: 2),
                     Text(
-                      '${capitalize(place.category)} · ⭐ ${place.rating.toStringAsFixed(1)}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      '${_localizedCategory(l10n, place.category)} · ⭐ ${place.rating.toStringAsFixed(1)}',
+                      style:
+                          TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -252,7 +278,7 @@ class _PlaceCoordCard extends StatelessWidget {
               ),
               TextButton(
                 onPressed: onDetails,
-                child: const Text('Details'),
+                child: Text(l10n.mapDetails),
               ),
             ],
           ),

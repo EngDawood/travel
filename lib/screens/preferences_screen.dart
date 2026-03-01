@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../config/constants.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../providers/places_provider.dart';
-import '../widgets/category_chip.dart';
+import '../widgets/preference_category_card.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
@@ -28,9 +29,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   }
 
   void _onGenerate() {
+    final l10n = AppLocalizations.of(context);
     if (_selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one category.')),
+        SnackBar(content: Text(l10n.preferencesSelectAtLeastOne)),
       );
       return;
     }
@@ -40,45 +42,52 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final city = context.watch<PlacesProvider>().currentCity;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('What are you into?')),
+      appBar: AppBar(title: Text(l10n.preferencesTitle)),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Planning a trip to $city',
-              style: Theme.of(context).textTheme.titleMedium,
+              l10n.preferencesTitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Select the types of places you want to visit.',
+              l10n.preferencesSubtitle(city),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
             ),
             const SizedBox(height: 24),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: PlaceCategory.values.map((category) {
-                return CategoryChip(
-                  category: category,
-                  isSelected: _selected.contains(category),
-                  onTap: () => _toggle(category),
-                );
-              }).toList(),
+            Expanded(
+              child: ListView.separated(
+                itemCount: PlaceCategory.values.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final category = PlaceCategory.values[index];
+                  return PreferenceCategoryCard(
+                    category: category,
+                    isSelected: _selected.contains(category),
+                    onTap: () => _toggle(category),
+                  );
+                },
+              ),
             ),
-            const Spacer(),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _selected.isEmpty ? null : _onGenerate,
                 icon: const Icon(Icons.explore),
-                label: const Text('Find Places'),
+                label: Text(l10n.preferencesFindPlaces),
               ),
             ),
           ],

@@ -7,11 +7,13 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'config/constants.dart';
 import 'providers/auth_provider.dart';
+import 'providers/locale_provider.dart';
 import 'providers/places_provider.dart';
 import 'providers/itinerary_provider.dart';
 import 'providers/map_provider.dart';
 import 'services/api_service.dart';
 import 'services/mock_api_service.dart';
+import 'services/preferences_service.dart';
 import 'utils/app_logger.dart';
 
 void main() {
@@ -42,10 +44,15 @@ void main() {
     AppLogger.info('[App] Running with real Google Places API.');
   }
 
+  final preferencesService = PreferencesService();
+
   runApp(
     MultiProvider(
       providers: [
         Provider<ApiService>.value(value: apiService),
+        Provider<PreferencesService>.value(value: preferencesService),
+        ChangeNotifierProvider(
+            create: (ctx) => LocaleProvider(ctx.read<PreferencesService>())),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(
             create: (ctx) => PlacesProvider(ctx.read<ApiService>())),
